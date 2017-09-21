@@ -25,6 +25,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import login
+from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
@@ -106,12 +107,16 @@ class BaseTestCase(Fixtures, Exam):
         self.client.cookies[session_cookie] = self.session.session_key
         self.client.cookies[session_cookie].update(cookie_data)
 
+    def make_request(self, user=None):
+        request = HttpRequest()
+        request.session = self.session
+        request.user = user or AnonymousUser()
+        return request
+
     def login_as(self, user, organization_id=None):
         user.backend = settings.AUTHENTICATION_BACKENDS[0]
 
-        request = HttpRequest()
-        request.session = self.session
-
+        request = self.make_request()
         login(request, user)
         request.user = user
         if organization_id:

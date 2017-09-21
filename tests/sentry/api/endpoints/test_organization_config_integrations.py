@@ -20,4 +20,4 @@ class OrganizationConfigIntegrationsTest(APITestCase):
         assert provider['id'] == 'example'
         assert provider['name'] == 'Example'
         assert provider['config']
-        assert provider['setupUri']
+        assert provider['setupDialog']['url']
